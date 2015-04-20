@@ -80,8 +80,17 @@ if ($action=='open_session'){
 	$session = $DB->get_record('local_attendance_session',array('courseid'=>$courseid,'open'=>1));
 	if (empty($session)){
 	$openSessionForm = new openSession();
-	if($fromform = $openSessionForm->get_data()){	
-	$DB->insert_record('local_attendance_session',array('courseid'=>$courseid,'date'=>time(),'modifierid'=>$USER->id,'open'=>1,'comment'=>$fromform->comment,'duration'=>$fromform->duration));
+	if($fromform = $openSessionForm->get_data()){
+
+		$open_session = new stdClass();
+		$open_session->courseid = $courseid;
+		$open_session->date = time();
+		$open_session->modifierid = $USER->id;
+		$open_session->open = 1;
+		$open_session->comment = $fromform->comment;
+		$open_session->duration = $fromform->duration;
+		
+	$DB->insert_records('local_attendance_session',array($open_session));
 	$action = 'check_attendance';
 	}}
 	else{
