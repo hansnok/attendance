@@ -33,6 +33,7 @@ require_once($CFG->dirroot.'/local/attendance/tables.php');
 
 
 global $PAGE, $CFG, $OUTPUT, $DB, $COURSE, $USER;
+
 require_login();
 
 if(!(isset($CFG->local_uai_debug) && $CFG->local_uai_debug==1)) {
@@ -62,9 +63,11 @@ if ($action=='mark_attendance'){
 	else {$ip = $_SERVER['REMOTE_ADDR'];}
 	
 	$courseid = required_param('courseid',PARAM_INT);
-	$session = $DB->get_record_sql('SELECT s.id,c.fullname FROM {user} u INNER JOIN {user_enrolments} ue ON (ue.userid = u.id) INNER JOIN {enrol} e ON (e.id = ue.enrolid) INNER JOIN {course} c ON (e.courseid = c.id) INNER JOIN {local_attendance_session} s ON (c.id=s.courseid) WHERE ue.userid = '.$USER->id.' AND s.open=1 AND c.id='.$courseid);
-	$attendanceExists = $DB->record_exists("local_attendance_attendance",array('sessionid'=>$session->id,'userid'=>$USER->id));
-		if ($attendanceExists){
+	$session = $DB->get_record_sql('SELECT s.id,c.fullname FROM {user} u INNER JOIN {user_enrolments} ue ON (ue.userid = u.id) INNER JOIN {enrol} e ON (e.id = ue.enrolid) INNER JOIN {course} c ON (e.courseid = c.id) INNER JOIN {local_attendance_session} s ON (c.id=s.courseid) WHERE ue.userid = :id AND s.open=1 AND c.id=:courseid', array('id'=>$USER->id,'courseid' => $courseid));
+	
+	var_dump($session);
+	$attendanceexists = $DB->record_exists("local_attendance_attendance",array('sessionid'=>$session->id,'userid'=>$USER->id));
+		if ($attendanceexists){
 			echo '<div class="alert alert-danger">'.get_string('alreadyregistered', 'local_attendance').'</div>';
 		}
 		else{
@@ -78,16 +81,16 @@ if ($action=='mark_attendance'){
 
 if ($action=='startpage'){
 
-$sessions = $DB->get_records_sql('SELECT c.id,c.fullname,u.id as userid,s.id as sessionid FROM {user} u INNER JOIN {user_enrolments} ue ON (ue.userid = u.id) INNER JOIN {enrol} e ON (e.id = ue.enrolid) INNER JOIN {course} c ON (e.courseid = c.id) INNER JOIN {local_attendance_session} s ON (c.id=s.courseid) WHERE ue.userid = '.$USER->id.' AND s.open=1');
-
+$sessions = $DB->get_records_sql('SELECT c.id,c.fullname,u.id as userid,s.id as sessionid FROM {user} u INNER JOIN {user_enrolments} ue ON (ue.userid = u.id) INNER JOIN {enrol} e ON (e.id = ue.enrolid) INNER JOIN {course} c ON (e.courseid = c.id) INNER JOIN {local_attendance_session} s ON (c.id=s.courseid) WHERE ue.userid = :user AND s.open=1',array('user'=>$USER->id));
+var_dump($sessions);
 if (empty($sessions)){
 	echo '<div class="alert alert-info">'.get_string('nosessions', 'local_attendance').'</div>';
 }
 else{
 	$n = 0;
 	foreach($sessions as $session){
-		$sessionContext = context_course::instance($session->id);
-		if(!has_capability('local/attendance:teacherview', $sessionContext)){
+		$sessioncontext = context_course::instance($session->id);
+		if(!has_capability('local/attendance:teacherview', $sessioncontext)){
 			$n++;
 		}
 	}
