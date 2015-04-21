@@ -65,7 +65,6 @@ if ($action=='mark_attendance'){
 	$courseid = required_param('courseid',PARAM_INT);
 	$session = $DB->get_record_sql('SELECT s.id,c.fullname FROM {user} u INNER JOIN {user_enrolments} ue ON (ue.userid = u.id) INNER JOIN {enrol} e ON (e.id = ue.enrolid) INNER JOIN {course} c ON (e.courseid = c.id) INNER JOIN {local_attendance_session} s ON (c.id=s.courseid) WHERE ue.userid = :id AND s.open=1 AND c.id=:courseid', array('id'=>$USER->id,'courseid' => $courseid));
 	
-	var_dump($session);
 	$attendanceexists = $DB->record_exists("local_attendance_attendance",array('sessionid'=>$session->id,'userid'=>$USER->id));
 		if ($attendanceexists){
 			echo '<div class="alert alert-danger">'.get_string('alreadyregistered', 'local_attendance').'</div>';
@@ -82,7 +81,7 @@ if ($action=='mark_attendance'){
 if ($action=='startpage'){
 
 $sessions = $DB->get_records_sql('SELECT c.id,c.fullname,u.id as userid,s.id as sessionid FROM {user} u INNER JOIN {user_enrolments} ue ON (ue.userid = u.id) INNER JOIN {enrol} e ON (e.id = ue.enrolid) INNER JOIN {course} c ON (e.courseid = c.id) INNER JOIN {local_attendance_session} s ON (c.id=s.courseid) WHERE ue.userid = :user AND s.open=1',array('user'=>$USER->id));
-var_dump($sessions);
+
 if (empty($sessions)){
 	echo '<div class="alert alert-info">'.get_string('nosessions', 'local_attendance').'</div>';
 }
