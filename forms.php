@@ -49,6 +49,7 @@ class actionsForStudent extends moodleform{
 		$mform->setType('action',PARAM_TEXT);
 	}
 	function validation($data,$files) {
+		//falta implementar validación
 	
 	}
 }
@@ -76,7 +77,7 @@ class actionsForSession extends moodleform{
 		$mform->setType('action',PARAM_TEXT);
 	}
 	function validation($data,$files) {
-
+		//falta implementar validación
 	}
 	
 }
@@ -104,6 +105,7 @@ class openSession extends moodleform{
 	}
 	function validation($data,$files) {
 		$errors = array();
+		//falta implementar validación
 	}
 
 }
@@ -118,11 +120,13 @@ class webapp extends moodleform{
 		$mform->setType('username', PARAM_TEXT);
 		$mform->addElement('password', 'password', 'Clave');
 		$mform->setType('password', PARAM_ALPHANUM);
+		//Error en la creación de input
 		$mform->addElement('html', '<input type="submit" name="entrar" value="Entrar">');
 	}
 	function validation($data, $files){
 		global $DB;
 		$errors = array();
 		return $errors;
+		//falta implementar validación
 	}
 }
